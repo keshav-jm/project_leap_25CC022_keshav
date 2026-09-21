@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management System</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 40px;
+        }
+
+        .container {
+            width: 450px;
+            margin: auto;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Student Management System</h1>
+
+    <!-- ADD STUDENT -->
+    <h2>Add Student</h2>
+
+    <input type="number" id="studentId" placeholder="Enter Student ID">
+
+    <input type="text" id="studentName" placeholder="Enter Student Name">
+
+    <button onclick="addStudent()">Add Student</button>
+
+
+    <!-- VIEW STUDENTS -->
+    <h2>View Students</h2>
+
+    <button onclick="getStudents()">View All Students</button>
+
+
+    <!-- DELETE STUDENT -->
+    <h2>Delete Student</h2>
+
+    <input type="number" id="deleteId" placeholder="Enter Student ID">
+
+    <button onclick="deleteStudent()">Delete Student</button>
+
+
+    <!-- RESULT -->
+    <div id="result"></div>
+
+</div>
+
+
+<script>
+
+    // POST - Add Student
+    function addStudent() {
+
+        const id = document.getElementById("studentId").value;
+        const name = document.getElementById("studentName").value;
+
+        fetch("/add", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                id: Number(id),
+                name: name
+            })
+        })
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                document.getElementById("result").innerText =
+                    "Student Added Successfully!\n" +
+                    "ID: " + data.id + "\n" +
+                    "Name: " + data.name;
+
+            })
+
+            .catch(error => {
+
+                document.getElementById("result").innerText =
+                    "Error adding student";
+
+            });
+    }
+
+
+    // GET - View Students
+    function getStudents() {
+
+        fetch("/Details", {
+            method: "GET"
+        })
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                let output = "Students:\n\n";
+
+                data.forEach(student => {
+
+                    output +=
+                        "ID: " + student.id +
+                        " | Name: " + student.name +
+                        "\n";
+
+                });
+
+                document.getElementById("result").innerText = output;
+
+            })
+
+            .catch(error => {
+
+                document.getElementById("result").innerText =
+                    "Error getting students";
+
+            });
+    }
+
+
+    // DELETE - Delete Student
+    function deleteStudent() {
+
+        const id = document.getElementById("deleteId").value;
+
+        fetch("/Erase?id=" + id, {
+            method: "DELETE"
+        })
+
+            .then(response => response.text())
+
+            .then(data => {
+
+                document.getElementById("result").innerText = data;
+
+            })
+
+            .catch(error => {
+
+                document.getElementById("result").innerText =
+                    "Error deleting student";
+
+            });
+    }
+
+</script>
+
+</body>
+</html>
